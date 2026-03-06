@@ -4,8 +4,8 @@ set -euo pipefail
 # ===== 配置区（按需修改）=====
 DOUYIN_URL="https://v.douyin.com/xxxx/"
 ASR_PROVIDER="qwen"
-ASR_API_KEY="sk-KEY"
-DEEPSEEK_API_KEY="sk-KEY"
+ASR_API_KEY="YOUR_QWEN_API_KEY"
+DEEPSEEK_API_KEY="YOUR_DEEPSEEK_API_KEY"
 OUTPUT_MD="/dir/douyin_summary_output.md"
 DEEPSEEK_PROMPT=$'你是短视频文案分析助手。\n请基于转写文本输出：\n1. 一句话核心总结\n2. 3-5条关键观点\n3. 可复用的文案结构模板\n4. 5个标题建议\n请使用简体中文，表达清晰。'
 
