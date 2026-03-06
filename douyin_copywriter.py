@@ -487,6 +487,7 @@ def summarize_with_deepseek(
     transcript: str,
     api_key: str,
     model: str = "deepseek-chat",
+    system_prompt: str = "",
     base_url: str = "https://api.deepseek.com/v1",
     timeout: int = 120,
 ) -> str:
@@ -495,7 +496,7 @@ def summarize_with_deepseek(
         "Authorization": f"Bearer {api_key}",
         "Content-Type": "application/json",
     }
-    prompt = (
+    prompt = system_prompt.strip() or (
         "你是短视频文案分析助手。请基于转写文本输出：\n"
         "1. 一句话核心总结\n"
         "2. 3-5 条关键观点\n"
@@ -599,6 +600,11 @@ def parse_args() -> argparse.Namespace:
         help="DeepSeek 模型，默认 deepseek-chat",
     )
     parser.add_argument(
+        "--deepseek-prompt",
+        default=os.getenv("DEEPSEEK_PROMPT", ""),
+        help="DeepSeek system prompt，可通过参数或 DEEPSEEK_PROMPT 覆盖默认总结提示词",
+    )
+    parser.add_argument(
         "--cookies",
         default=os.getenv("DOUYIN_COOKIES_FILE", ""),
         help="yt-dlp cookies 文件路径，默认读取 DOUYIN_COOKIES_FILE",
@@ -675,6 +681,7 @@ def main() -> int:
             transcript=transcript,
             api_key=args.deepseek_api_key,
             model=args.deepseek_model,
+            system_prompt=args.deepseek_prompt,
         )
         print("[4/4] DeepSeek 总结完成")
 
