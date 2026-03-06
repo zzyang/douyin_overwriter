@@ -1,91 +1,59 @@
-# 抖音视频文案提取总结
+# 抖音视频文案提取与总结
 
-一个 Python 命令行工具，支持：
+本项目用于：
 - 解析抖音短链接
-- 下载并提取音频
-- 调用语音模型转写成文字
-- 调用 DeepSeek 总结文案
+- 调用千问 ASR 做语音转写
+- 调用 DeepSeek 对转写文案做总结
 - 输出 Markdown 报告
 
-说明：当 `yt-dlp` 因抖音风控失败时，程序会尝试使用 `iesdouyin` 页面数据做一次兜底下载；若视频已删除/权限不可见，会输出明确原因。
+## 文件说明
 
-## 1. 安装
+- `douyin_copywriter.py`: 主程序
+- `run_douyin_summary.zsh`: 一键运行脚本（推荐）
+- `requirements.txt`: Python 依赖
+
+## 快速开始
+
+### 1) 安装依赖
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install -r requirements.txt
+cd /Users/andy/Documents/Playground
+pip3 install -r requirements.txt
 ```
 
-还需要系统可用 `ffmpeg`（供 `yt-dlp` 音频提取时使用）。
+### 2) 编辑运行脚本
 
-## 2. 配置 API Key
+打开并编辑：
+
+`/Users/andy/Documents/Playground/run_douyin_summary.zsh`
+
+重点修改这些变量：
+
+- `DOUYIN_URL`: 抖音短链接
+- `ASR_API_KEY`: 千问 Key
+- `DEEPSEEK_API_KEY`: DeepSeek Key
+- `DEEPSEEK_PROMPT`: 给 DeepSeek 的总结提示词（可自由改）
+- `OUTPUT_MD`: 输出 Markdown 文件路径
+
+### 3) 执行
 
 ```bash
-export ASR_API_KEY="你的语音模型API_KEY"
-export DEEPSEEK_API_KEY="你的DeepSeek_API_KEY"
+chmod +x /Users/andy/Documents/Playground/run_douyin_summary.zsh
+/Users/andy/Documents/Playground/run_douyin_summary.zsh
 ```
 
-可选配置：
+## 手动命令方式（可选）
 
 ```bash
-export ASR_BASE_URL="https://api.openai.com/v1"
-export ASR_MODEL="whisper-1"
-export DEEPSEEK_MODEL="deepseek-chat"
-```
-
-若使用千问 ASR（DashScope）：
-
-```bash
-export ASR_PROVIDER="qwen"
-export ASR_API_KEY="你的DashScope_API_KEY"
-export QWEN_BASE_URL="https://dashscope.aliyuncs.com/api/v1"
-export QWEN_MODEL="qwen3-asr-flash-filetrans"
-```
-
-## 3. 运行
-
-```bash
-python douyin_copywriter.py "https://v.douyin.com/xxxxxx/"
-
-# 使用千问 ASR + DeepSeek 总结
-python douyin_copywriter.py "https://v.douyin.com/xxxxxx/" \
+python3 -u /Users/andy/Documents/Playground/douyin_copywriter.py "https://v.douyin.com/xxxxxx/" \
   --asr-provider qwen \
-  --asr-api-key "$ASR_API_KEY" \
-  --deepseek-api-key "$DEEPSEEK_API_KEY" \
-  -o result.md
+  --asr-api-key "YOUR_QWEN_API_KEY" \
+  --deepseek-api-key "YOUR_DEEPSEEK_API_KEY" \
+  --deepseek-prompt "你自定义的总结提示词" \
+  -o /Users/andy/Documents/Playground/douyin_summary_output.md
 ```
 
-指定输出路径：
+## 说明
 
-```bash
-python douyin_copywriter.py "https://v.douyin.com/xxxxxx/" -o result.md
-
-# 需要登录态时（推荐）
-python douyin_copywriter.py "https://v.douyin.com/xxxxxx/" \
-  --cookies-from-browser chrome \
-  -o result.md
-```
-
-## 4. 参数说明
-
-- `url`: 抖音短链接或分享链接
-- `-o, --output`: 输出 Markdown 文件路径（默认 `douyin_summary.md`）
-- `--workdir`: 临时音频目录（默认 `.cache_douyin_audio`）
-- `--asr-base-url`: 语音模型服务地址（OpenAI 兼容）
-- `--asr-model`: 语音模型名
-- `--asr-provider`: `openai` 或 `qwen`
-- `--asr-api-key`: 语音模型 API Key
-- `--qwen-base-url`: 千问 ASR DashScope 地址
-- `--qwen-model`: 千问 ASR 模型（默认 `qwen3-asr-flash-filetrans`）
-- `--deepseek-api-key`: DeepSeek API Key
-- `--deepseek-model`: DeepSeek 模型名
-- `--cookies`: cookies 文件路径（yt-dlp 格式）
-- `--cookies-from-browser`: 直接从浏览器读取 cookies（如 `chrome` / `safari` / `firefox`）
-
-## 5. 输出示例结构
-
-生成文件包含：
-- 原始链接、解析链接、视频ID
-- 完整转写文本
-- DeepSeek 总结（核心总结、观点、模板、标题建议）
+- 当千问无法直接下载抖音源地址时，程序会自动尝试中转上传后重试转写。
+- `--deepseek-prompt` 为空时，会使用程序内置默认总结模板。
