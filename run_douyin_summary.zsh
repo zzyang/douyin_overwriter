@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # ===== 配置区（按需修改）=====
-DOUYIN_URL="https://v.douyin.com/p0uo0chew7w/"
+DOUYIN_URL="https://v.douyin.com/xxxx/"
 ASR_PROVIDER="qwen"
 ASR_API_KEY="sk-KEY"
 DEEPSEEK_API_KEY="sk-KEY"
